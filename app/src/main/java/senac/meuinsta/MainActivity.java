@@ -55,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
         listaFotos.setLayoutManager(layout);
 
-        List<Bitmap> fotos = new ArrayList<>();
+        List<File> fotos = new ArrayList<>();
 
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
         for (File foto : storageDir.listFiles()){
-            fotos.add(BitmapFactory.decodeFile(foto.getAbsolutePath()));
+            fotos.add(foto);
         }
 
         listaFotos.setAdapter(new PhotoAdapter(fotos, getBaseContext()));
@@ -97,10 +97,21 @@ public class MainActivity extends AppCompatActivity {
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+                galleryAddPic();
             }
         }
 
     }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

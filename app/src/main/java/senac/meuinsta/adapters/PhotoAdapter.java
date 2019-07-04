@@ -2,6 +2,7 @@ package senac.meuinsta.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,16 +10,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 
 import senac.meuinsta.R;
 
 public class PhotoAdapter extends RecyclerView.Adapter {
 
-    private List<Bitmap> fotos;
+    private List<File> fotos;
     private Context context;
 
-    public PhotoAdapter(List<Bitmap> fotos, Context context) {
+    public PhotoAdapter(List<File> fotos, Context context) {
         this.fotos = fotos;
         this.context = context;
     }
@@ -38,9 +40,29 @@ public class PhotoAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         PhotoViewHolder viewHolder = (PhotoViewHolder) holder;
 
-        Bitmap photo = fotos.get(position);
+        File photo = fotos.get(position);
 
-        viewHolder.foto.setImageBitmap(photo);
+        // Get the dimensions of the View
+        int targetW = viewHolder.foto.getWidth();
+        int targetH = viewHolder.foto.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory. decodeFile(photo.getAbsolutePath(), bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(photo.getAbsolutePath(), bmOptions);
+        viewHolder.foto.setImageBitmap(bitmap);
     }
 
     @Override

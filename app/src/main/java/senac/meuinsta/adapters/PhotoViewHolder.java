@@ -1,5 +1,7 @@
 package senac.meuinsta.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -16,4 +18,5 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         foto = itemView.findViewById(R.id.imgItem);
     }
+
 }
